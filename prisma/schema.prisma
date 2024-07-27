@@ -13,14 +13,15 @@ enum UserRole {
 }
 
 model User {
-  id            String    @id @default(auto()) @map("_id") @db.ObjectId
-  name          String?
-  email         String?   @unique
-  password      String?
-  emailVerified DateTime?
-  image         String?
-  role          UserRole  @default(USER)
-  accounts      Account[]
+  id               String             @id @default(auto()) @map("_id") @db.ObjectId
+  name             String?
+  email            String?            @unique
+  password         String?
+  emailVerified    DateTime?
+  image            String?
+  role             UserRole           @default(USER)
+  accounts         Account[]
+  UserWorkingHours UserWorkingHours[]
 }
 
 model Account {
@@ -58,4 +59,17 @@ model PasswordResetToken {
   expires DateTime
 
   @@unique([email, token])
+}
+
+model UserWorkingHours {
+  id                     String @id @default(auto()) @map("_id") @db.ObjectId
+  week_day               Int
+  timer_start_in_minutes Int
+  time_end_in_minutes    Int
+
+  user_id String @db.ObjectId
+  user    User   @relation(fields: [user_id], references: [id])
+
+  @@index([user_id])
+  @@map("user_time_intervals")
 }

@@ -35,3 +35,13 @@ export const RegisterSchema = z.object({
     message: "Minimum 6 characters required",
   }),
 });
+
+export const workingHoursBodySchema = z.object({
+  intervals: z.array(
+    z.object({
+      weekDay: z.number().int().min(0).max(6),
+      startTimeInMinutes: z.number().int().min(0).max(1439),
+      endTimeInMinutes: z.number().int().min(0).max(1439),
+    })
+  ),
+});
