@@ -19,14 +19,32 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { intervals } = workingHoursBodySchema.parse(body);
 
-    await prisma.userWorkingHours.createMany({
-      data: intervals.map((interval) => ({
-        week_day: interval.weekDay,
-        timer_start_in_minutes: interval.startTimeInMinutes,
-        time_end_in_minutes: interval.endTimeInMinutes,
-        user_id,
-      })),
+    const existingWorkingHours = await prisma.userWorkingHours.findFirst({
+      where: { user_id },
     });
+
+    if (existingWorkingHours) {
+      await prisma.userWorkingHours.deleteMany({
+        where: { user_id },
+      });
+      await prisma.userWorkingHours.createMany({
+        data: intervals.map((interval) => ({
+          week_day: interval.weekDay,
+          timer_start_in_minutes: interval.startTimeInMinutes,
+          time_end_in_minutes: interval.endTimeInMinutes,
+          user_id,
+        })),
+      });
+    } else {
+      await prisma.userWorkingHours.createMany({
+        data: intervals.map((interval) => ({
+          week_day: interval.weekDay,
+          timer_start_in_minutes: interval.startTimeInMinutes,
+          time_end_in_minutes: interval.endTimeInMinutes,
+          user_id,
+        })),
+      });
+    }
 
     return NextResponse.json(
       { message: "Working hours created successfully" },
