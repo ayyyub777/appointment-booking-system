@@ -1,29 +1,26 @@
 import { NextResponse } from "next/server";
 import dayjs from "dayjs";
 import prisma from "@/lib/prisma";
+import { auth } from "@/auth";
 
-export async function POST(req: Request) {
+export async function GET(req: Request) {
   try {
+    const session = await auth();
+
+    if (!session || !session.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const username = session.user.name;
+    const user_id = session.user.id;
+
     const body = await req.json();
 
-    const { date, username } = body.data;
+    const { date } = body.query;
 
     if (!date) {
       return NextResponse.json(
         { message: "Date not provided." },
-        { status: 400 }
-      );
-    }
-
-    const user = await prisma.user.findUnique({
-      where: {
-        username,
-      },
-    });
-
-    if (!user) {
-      return NextResponse.json(
-        { message: "User does not exist." },
         { status: 400 }
       );
     }
@@ -38,7 +35,7 @@ export async function POST(req: Request) {
 
     const userAvailability = await prisma.userWorkingHours.findFirst({
       where: {
-        user_id: user.id,
+        user_id,
         week_day: referenceDate.get("day"),
       },
     });
@@ -61,9 +58,7 @@ export async function POST(req: Request) {
       }
     );
 
-    // Task : Block the times that are already booked
-
-    return NextResponse.json({ possibleTimes, availableTimes: possibleTimes });
+    // Block the times that are already booked ...
   } catch (error) {
     return NextResponse.json({ status: 500 });
   }
