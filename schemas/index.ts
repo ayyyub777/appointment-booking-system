@@ -45,3 +45,11 @@ export const workingHoursBodySchema = z.object({
     })
   ),
 });
+
+export const ConfirmFormSchema = z.object({
+  name: z
+    .string()
+    .min(3, { message: "O nome precisa de no mínimo 3 caracteres!" }),
+  email: z.string().email({ message: "Digite um email válido!" }),
+  note: z.string().nullable(),
+});

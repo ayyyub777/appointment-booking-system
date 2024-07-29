@@ -1,27 +1,19 @@
-import { ScheduleForm } from "./components/schedule-form";
-import prisma from "@/lib/prisma";
+"use client";
 
-interface ScheduleProps {
-  params: {
-    username: string;
-  };
-}
+import { useState } from "react";
+import { Confirm } from "./components/confirm";
+import { Schedule } from "./components/schedule";
 
-export default async function SchedulePage({ params }: ScheduleProps) {
-  const user = await prisma.user.findUnique({
-    where: {
-      username: params.username,
-    },
-  });
+export default function ScheduleFPage() {
+  const [selectedDateTime, setSelectedDateTime] = useState<Date | null>();
 
-  if (!user) {
-    return <h1>User not found</h1>;
+  function cancel() {
+    setSelectedDateTime(null);
   }
 
-  return (
-    <div>
-      <h1>{user.name} Page</h1>
-      <ScheduleForm />
-    </div>
-  );
+  if (selectedDateTime) {
+    return <Confirm selectedDateTime={selectedDateTime} cancel={cancel} />;
+  }
+
+  return <Schedule onSelectDateTime={setSelectedDateTime} username="user" />;
 }

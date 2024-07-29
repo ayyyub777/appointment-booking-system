@@ -62,14 +62,8 @@ const Schedule = ({ onSelectDateTime, username }: ScheduleProps) => {
       />
       {selectedDate && (
         <div className="w-full md:w-[350px]">
-          <h2 className="text-xl font-semibold mb-4">
-            {dayjs(selectedDate).format("dddd")}
-            <span className="text-gray-500 ml-2">
-              {dayjs(selectedDate).format("DD[ de ]MMMM")}
-            </span>
-          </h2>
           <ScrollArea className="h-[300px]">
-            <div className="grid grid-cols-3 gap-2">
+            <div className="flex flex-col gap-2">
               {availability?.possibleTimes.map((hour) => (
                 <Button
                   key={hour}
