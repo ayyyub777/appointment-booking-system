@@ -4,7 +4,9 @@ import { useState } from "react";
 import { Confirm } from "./components/confirm";
 import { Schedule } from "./components/schedule";
 
-export default function ScheduleFPage() {
+export default function SchedulePage({
+  params,
+}: Readonly<{ params: { username: string } }>) {
   const [selectedDateTime, setSelectedDateTime] = useState<Date | null>();
 
   function cancel() {
@@ -12,8 +14,19 @@ export default function ScheduleFPage() {
   }
 
   if (selectedDateTime) {
-    return <Confirm selectedDateTime={selectedDateTime} cancel={cancel} />;
+    return (
+      <Confirm
+        selectedDateTime={selectedDateTime}
+        cancel={cancel}
+        username={params.username}
+      />
+    );
   }
 
-  return <Schedule onSelectDateTime={setSelectedDateTime} username="user" />;
+  return (
+    <Schedule
+      onSelectDateTime={setSelectedDateTime}
+      username={params.username}
+    />
+  );
 }
